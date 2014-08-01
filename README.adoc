@@ -1,0 +1,5 @@
+= Diary
+Jaime Silvela
+2014-08-01
+
+Module to provide abstraction to the storage and access of a diary as a file in JSON format.
