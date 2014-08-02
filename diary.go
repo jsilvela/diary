@@ -1,11 +1,11 @@
-// Package diary defines the Record and Diary structures, defines their file persistence scheme (JSON) 
+// Package diary defines the Record and Diary structures, defines their file persistence scheme (JSON)
 // and hides these choices from calling modules.
 package diary
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"fmt"
+	"io/ioutil"
 	"time"
 )
 
