@@ -12,3 +12,10 @@ func TestAddEntry(t *testing.T) {
 		t.Errorf("After storing single entry with tag 'hello', expected it to be the first tag of the first entry. Was %s", d[0].Tags[0])
 	}
 }
+
+func TestRead(t *testing.T) {
+	d, err := Read("")
+	if err == nil {
+		t.Errorf("Should have errored when trying to read from empty file. Read this instead %v", d)
+	}
+}
