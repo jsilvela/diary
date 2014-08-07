@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"time"
 )
 
@@ -21,7 +22,7 @@ type Diary []*Record
 // The Len, Swap and Less functions allow sorting
 func (a Diary) Len() int           { return len(a) }
 func (a Diary) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a Diary) Less(i, j int) bool { return a[i].WrittenTime.Before(a[j].WrittenTime) }
+func (a Diary) Less(i, j int) bool { return a[i].EventTime.Before(a[j].EventTime) }
 
 func (r *Record) String() string {
 	y, m, d := r.EventTime.Date()
@@ -51,6 +52,31 @@ func Read(filename string) (*Diary, error) {
 }
 
 func (a *Diary) AddEntry(r *Record) {
-	r.WrittenTime = time.Now()
+	if r.WrittenTime.IsZero() {
+		r.WrittenTime = time.Now()
+		log.Println("WARN: modifying WrittenTime of entry")
+	}
 	*a = append(*a, r)
+}
+
+func (a Diary) LatestHappened() (r *Record) {
+	var latest time.Time
+	var rec *Record
+	for _, e := range a {
+		if latest.Before(e.EventTime) {
+			latest, rec = e.EventTime, e
+		}
+	}
+	return rec
+}
+
+func (a Diary) LatestWritten() (r *Record) {
+	var latest time.Time
+	var rec *Record
+	for _, e := range a {
+		if latest.Before(e.WrittenTime) {
+			latest, rec = e.WrittenTime, e
+		}
+	}
+	return rec
 }
