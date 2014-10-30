@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-func TestLatest(t *testing.T) {
-	const shortForm = "2006-01-02"
+func Test_Latest(t *testing.T) {
+	const short_form = "2006-01-02"
 
 	var d diary.Diary
-	t1, _ := time.Parse(shortForm, "2014-07-17")
-	t2, _ := time.Parse(shortForm, "2014-07-30")
+	t1, _ := time.Parse(short_form, "2014-07-17")
+	t2, _ := time.Parse(short_form, "2014-07-30")
 	(&d).Add_entry(&diary.Record{
 		Tags:       []string{"A", "B"},
 		Event_time: t1,
@@ -24,7 +24,7 @@ func TestLatest(t *testing.T) {
 
 	lt := Latest(d)
 	if *lt["B"] != t2 {
-		t.Errorf("Latest entry of B should be the latest, was %s", lt["B"])
+		t.Errorf("Latest entry of B incorrect, was %s", lt["B"])
 	}
 
 	if len(lt) != 3 {
@@ -32,12 +32,12 @@ func TestLatest(t *testing.T) {
 	}
 }
 
-func TestTags(t *testing.T) {
-	const shortForm = "2006-01-02"
+func Test_Tags(t *testing.T) {
+	const short_form = "2006-01-02"
 
 	var d diary.Diary
-	t1, _ := time.Parse(shortForm, "2014-07-17")
-	t2, _ := time.Parse(shortForm, "2014-07-30")
+	t1, _ := time.Parse(short_form, "2014-07-17")
+	t2, _ := time.Parse(short_form, "2014-07-30")
 	(&d).Add_entry(&diary.Record{
 		Tags:       []string{"A", "B"},
 		Event_time: t1,

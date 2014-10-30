@@ -8,17 +8,17 @@ import (
 
 func Latest(d diary.Diary) map[string]*time.Time {
 
-	tagTime := make(map[string]*time.Time)
+	tag_time := make(map[string]*time.Time)
 	sort.Stable(sort.Reverse(d))
 	for _, r := range d {
 		for _, tag := range r.Tags {
-			if tagTime[tag] == nil {
-				tagTime[tag] = &r.Event_time
+			if tag_time[tag] == nil {
+				tag_time[tag] = &r.Event_time
 			}
 		}
 	}
 
-	return tagTime
+	return tag_time
 }
 
 func Tags(d diary.Diary) []string {

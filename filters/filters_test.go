@@ -10,28 +10,32 @@ const (
 	Day = time.Hour * 24
 )
 
-func TestBy_week(t *testing.T) {
+func Test_By_range(t *testing.T) {
 	var d diary.Diary
 
-	t1 := time.Now().Add(-2 * Week)
+	now := time.Now()
+	last_week := now.Add(-1 * Week)
+
+	t1 := now.Add(-2 * Week)
 	(&d).Add_entry(&diary.Record{Event_time: t1, Tags: []string{"testing"}})
-	if len(*By_week(d)) > 0 {
+
+	if len(*By_range(d, last_week, now)) > 0 {
 		t.Errorf("Expected empty when filtering by week on a diary with an old entry."+
 			" Got %v", By_week(d))
 	}
 
-	t2 := time.Now().Add(-2 * Day)
+	t2 := now.Add(-2 * Day)
 	(&d).Add_entry(&diary.Record{
 		Event_time: t2,
 		Text:       "My name is Coyote",
 		Tags:       []string{"testing"}})
-	if len(*By_week(d)) != 1 {
+	if len(*By_range(d, last_week, now)) != 1 {
 		t.Errorf("Expected one result when filtering by week on a "+
 			"diary with a fresh entry. Got %v", *By_week(d))
 	}
 }
 
-func TestBy_tag(t *testing.T) {
+func Test_By_tag(t *testing.T) {
 	var d diary.Diary
 	const shortForm = "2006-01-02"
 

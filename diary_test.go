@@ -9,10 +9,12 @@ func Test_Add_entry(t *testing.T) {
 	var d Diary
 	(&d).Add_entry(&Record{Tags: []string{"hello", "there"}})
 	if len(d) != 1 {
-		t.Errorf("After adding one entry to empty diary, expected it to have 1 entry. Got %d", len(d))
+		t.Errorf("After adding one entry to empty diary, expected it to have 1 entry. "+
+			"Got %d", len(d))
 	}
 	if d[0].Tags[0] != "hello" {
-		t.Errorf("After storing single entry with tag 'hello', expected it to be the first tag of the first entry. Was %s", d[0].Tags[0])
+		t.Errorf("After storing single entry with tag 'hello', expected it to be the "+
+			"first tag of the first entry. Was %s", d[0].Tags[0])
 	}
 }
 
@@ -39,15 +41,17 @@ func Test_Add_entry_respects_existing_Written_time(t *testing.T) {
 func Test_Read_empty(t *testing.T) {
 	d, err := Read("")
 	if err == nil {
-		t.Errorf("Should have errored when trying to read from empty file. Read this instead %v", d)
+		t.Errorf("Should have errored when trying to read from empty file."+
+			" Read this instead %v", d)
 	}
 }
 
 func Test_Latest(t *testing.T) {
 	var d Diary
-	t1, _ := time.Parse("Jan 2 2006 15:04:05", "Jan 2 2006 15:04:05")
-	t2, _ := time.Parse("Jan 2 2006 15:04:05", "Jan 2 2016 15:04:05")
-	t3, _ := time.Parse("Jan 2 2006 15:04:05", "Jan 3 2006 15:04:05")
+	const base_time = "Jan 2 2006 15:04:05"
+	t1, _ := time.Parse(base_time, "Jan 2 2006 15:04:05")
+	t2, _ := time.Parse(base_time, "Jan 2 2016 15:04:05")
+	t3, _ := time.Parse(base_time, "Jan 3 2006 15:04:05")
 
 	(&d).Add_entry(&Record{
 		Tags:         []string{"hello", "there"},
@@ -58,13 +62,13 @@ func Test_Latest(t *testing.T) {
 		Event_time:   t1,
 		Written_time: t1})
 
-	latestH := d.Latest_happened()
-	latestW := d.Latest_written()
+	latest_hp := d.Latest_happened()
+	latest_wr := d.Latest_written()
 
-	if latestH.Event_time != t3 {
-		t.Errorf("Bad ordering. Latest happened should not have been: %v", latestH)
+	if latest_hp.Event_time != t3 {
+		t.Errorf("Bad ordering. Latest happened should not have been: %v", latest_hp)
 	}
-	if latestW.Written_time != t2 {
-		t.Errorf("Bad ordering. Latest written should not have been: %v", latestW)
+	if latest_wr.Written_time != t2 {
+		t.Errorf("Bad ordering. Latest written should not have been: %v", latest_wr)
 	}
 }
