@@ -12,15 +12,15 @@ func TestLatest(t *testing.T) {
 	var d diary.Diary
 	t1, _ := time.Parse(shortForm, "2014-07-17")
 	t2, _ := time.Parse(shortForm, "2014-07-30")
-	(&d).AddEntry(&diary.Record{
-		Tags:      []string{"A", "B"},
-		EventTime: t1,
-		Text:      "Blah"})
+	(&d).Add_entry(&diary.Record{
+		Tags:       []string{"A", "B"},
+		Event_time: t1,
+		Text:       "Blah"})
 
-	(&d).AddEntry(&diary.Record{
-		Tags:      []string{"C", "B"},
-		EventTime: t2,
-		Text:      "Bleh"})
+	(&d).Add_entry(&diary.Record{
+		Tags:       []string{"C", "B"},
+		Event_time: t2,
+		Text:       "Bleh"})
 
 	lt := Latest(d)
 	if *lt["B"] != t2 {
@@ -38,15 +38,15 @@ func TestTags(t *testing.T) {
 	var d diary.Diary
 	t1, _ := time.Parse(shortForm, "2014-07-17")
 	t2, _ := time.Parse(shortForm, "2014-07-30")
-	(&d).AddEntry(&diary.Record{
-		Tags:      []string{"A", "B"},
-		EventTime: t1,
-		Text:      "Blah"})
+	(&d).Add_entry(&diary.Record{
+		Tags:       []string{"A", "B"},
+		Event_time: t1,
+		Text:       "Blah"})
 
-	(&d).AddEntry(&diary.Record{
-		Tags:      []string{"C", "B"},
-		EventTime: t2,
-		Text:      "Bleh"})
+	(&d).Add_entry(&diary.Record{
+		Tags:       []string{"C", "B"},
+		Event_time: t2,
+		Text:       "Bleh"})
 
 	tags := Tags(d)
 

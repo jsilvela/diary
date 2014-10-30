@@ -1,4 +1,5 @@
-// Package diary defines the Record and Diary structures, defines their file persistence scheme (JSON)
+// Package diary defines the Record and Diary structures,
+// defines their file persistence scheme (JSON)
 // and hides these choices from calling modules.
 package diary
 
@@ -6,15 +7,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"time"
 )
 
 type Record struct {
-	EventTime   time.Time
-	WrittenTime time.Time
-	Tags        []string
-	Text        string
+	Event_time   time.Time
+	Written_time time.Time
+	Tags         []string
+	Text         string
 }
 
 type Diary []*Record
@@ -22,10 +22,10 @@ type Diary []*Record
 // The Len, Swap and Less functions allow sorting
 func (a Diary) Len() int           { return len(a) }
 func (a Diary) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a Diary) Less(i, j int) bool { return a[i].EventTime.Before(a[j].EventTime) }
+func (a Diary) Less(i, j int) bool { return a[i].Event_time.Before(a[j].Event_time) }
 
 func (r *Record) String() string {
-	y, m, d := r.EventTime.Date()
+	y, m, d := r.Event_time.Date()
 	return fmt.Sprintf("time: %d-%d-%d\ntags: %s\ntext: %s\n", y, m, d, r.Tags, r.Text)
 }
 
@@ -51,31 +51,30 @@ func Read(filename string) (*Diary, error) {
 	return &reqs, nil
 }
 
-func (a *Diary) AddEntry(r *Record) {
-	if r.WrittenTime.IsZero() {
-		r.WrittenTime = time.Now()
-		log.Println("WARN: modifying WrittenTime of entry")
+func (a *Diary) Add_entry(r *Record) {
+	if r.Written_time.IsZero() {
+		r.Written_time = time.Now()
 	}
 	*a = append(*a, r)
 }
 
-func (a Diary) LatestHappened() (r *Record) {
+func (a Diary) Latest_happened() (r *Record) {
 	var latest time.Time
 	var rec *Record
 	for _, e := range a {
-		if latest.Before(e.EventTime) {
-			latest, rec = e.EventTime, e
+		if latest.Before(e.Event_time) {
+			latest, rec = e.Event_time, e
 		}
 	}
 	return rec
 }
 
-func (a Diary) LatestWritten() (r *Record) {
+func (a Diary) Latest_written() (r *Record) {
 	var latest time.Time
 	var rec *Record
 	for _, e := range a {
-		if latest.Before(e.WrittenTime) {
-			latest, rec = e.WrittenTime, e
+		if latest.Before(e.Written_time) {
+			latest, rec = e.Written_time, e
 		}
 	}
 	return rec

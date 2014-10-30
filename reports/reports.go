@@ -13,7 +13,7 @@ func Latest(d diary.Diary) map[string]*time.Time {
 	for _, r := range d {
 		for _, tag := range r.Tags {
 			if tagTime[tag] == nil {
-				tagTime[tag] = &r.EventTime
+				tagTime[tag] = &r.Event_time
 			}
 		}
 	}

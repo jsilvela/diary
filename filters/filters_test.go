@@ -6,37 +6,45 @@ import (
 	"time"
 )
 
-func TestByWeek(t *testing.T) {
-	var d diary.Diary
-	const shortForm = "2006-01-02"
+const (
+	Day = time.Hour * 24
+)
 
-	t1, _ := time.Parse(shortForm, "2014-07-20")
-	(&d).AddEntry(&diary.Record{EventTime: t1, Tags: []string{"testing"}})
-	if len(*ByWeek(d)) > 0 {
-		t.Errorf("Expected an empty diary when filtering by week on a diary with an old entry. Got %v", ByWeek(d))
+func TestBy_week(t *testing.T) {
+	var d diary.Diary
+
+	t1 := time.Now().Add(-2 * Week)
+	(&d).Add_entry(&diary.Record{Event_time: t1, Tags: []string{"testing"}})
+	if len(*By_week(d)) > 0 {
+		t.Errorf("Expected empty when filtering by week on a diary with an old entry."+
+			" Got %v", By_week(d))
 	}
 
-	t2, err := time.Parse(shortForm, "2014-07-30")
-	(&d).AddEntry(&diary.Record{EventTime: t2, Text: "My name is Coyote", Tags: []string{"testing"}})
-	if len(*ByWeek(d)) != 1 {
-		t.Errorf("Expected a diary with one entry when filtering by week on a diary with an fresh entry. Err %s, Got %v", err, d)
+	t2 := time.Now().Add(-2 * Day)
+	(&d).Add_entry(&diary.Record{
+		Event_time: t2,
+		Text:       "My name is Coyote",
+		Tags:       []string{"testing"}})
+	if len(*By_week(d)) != 1 {
+		t.Errorf("Expected one result when filtering by week on a "+
+			"diary with a fresh entry. Got %v", *By_week(d))
 	}
 }
 
-func TestByTag(t *testing.T) {
+func TestBy_tag(t *testing.T) {
 	var d diary.Diary
 	const shortForm = "2006-01-02"
 
 	t1, _ := time.Parse(shortForm, "2014-07-20")
 	t2, _ := time.Parse(shortForm, "2014-07-30")
-	(&d).AddEntry(&diary.Record{EventTime: t1, Tags: []string{"testing"}})
-	(&d).AddEntry(&diary.Record{EventTime: t1, Tags: []string{"B"}})
-	(&d).AddEntry(&diary.Record{EventTime: t2, Tags: []string{"B", "C"}})
+	(&d).Add_entry(&diary.Record{Event_time: t1, Tags: []string{"testing"}})
+	(&d).Add_entry(&diary.Record{Event_time: t1, Tags: []string{"B"}})
+	(&d).Add_entry(&diary.Record{Event_time: t2, Tags: []string{"B", "C"}})
 
-	if len(*ByTag(d, "B")) != 2 {
+	if len(*By_tag(d, "B")) != 2 {
 		t.Errorf("Baaad")
 	}
-	if len(*ByTag(d, "C")) != 1 {
+	if len(*By_tag(d, "C")) != 1 {
 		t.Errorf("woorse")
 	}
 }
