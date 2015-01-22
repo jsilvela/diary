@@ -26,7 +26,8 @@ func (a Diary) Less(i, j int) bool { return a[i].Event_time.Before(a[j].Event_ti
 
 func (r *Record) String() string {
 	y, m, d := r.Event_time.Date()
-	return fmt.Sprintf("time: %d-%d-%d\ntags: %s\ntext: %s\n", y, m, d, r.Tags, r.Text)
+	return fmt.Sprintf("time: %d-%d-%d\ntags: %s\ntext: %s\n",
+		y, m, d, r.Tags, r.Text)
 }
 
 func Write(filename string, d Diary) error {
