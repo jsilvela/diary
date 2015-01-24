@@ -1,8 +1,13 @@
 package reports
 
 import (
+	"encoding/csv"
+	"fmt"
 	"github.com/jsilvela/diary"
+	"log"
+	"os"
 	"sort"
+	"strings"
 	"time"
 )
 
@@ -29,4 +34,23 @@ func Tags(d diary.Diary) []string {
 		tags = append(tags, k)
 	}
 	return tags
+}
+
+// CSV output
+func Time_series(d diary.Diary) []string {
+	file, err := os.Create("report.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	writer := csv.NewWriter(file)
+	lines := make([]string, d.Len())
+	sort.Stable(sort.Reverse(d))
+	for i, r := range d {
+		t := r.Event_time.Format("Mon 2 Jan 2006")
+		tags := strings.Join(r.Tags, ",")
+		writer.Write([]string{t, tags, r.Text})
+		lines[i] = fmt.Sprintf("%s => %s\n", t, tags)
+	}
+	writer.Flush()
+	return lines
 }
