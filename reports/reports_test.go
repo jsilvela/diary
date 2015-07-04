@@ -1,7 +1,8 @@
-package reports
+package reports_test
 
 import (
 	"github.com/jsilvela/diary"
+	"github.com/jsilvela/diary/reports"
 	"testing"
 	"time"
 )
@@ -22,9 +23,9 @@ func Test_Latest(t *testing.T) {
 		Event_time: t2,
 		Text:       "Bleh"})
 
-	lt := Latest(d)
+	lt := reports.Latest(d)
 	if *lt["B"] != t2 {
-		t.Errorf("Latest entry of B incorrect, was %s", lt["B"])
+		t.Errorf("reports.Latest entry of B incorrect, was %s", lt["B"])
 	}
 
 	if len(lt) != 3 {
@@ -48,7 +49,7 @@ func Test_Tags(t *testing.T) {
 		Event_time: t2,
 		Text:       "Bleh"})
 
-	tags := Tags(d)
+	tags := reports.Tags(d)
 
 	if len(tags) != 3 {
 		t.Errorf("Should see three tags. Got: %s", tags)
@@ -71,7 +72,7 @@ func Test_Time_series(t *testing.T) {
 		Event_time: t2,
 		Text:       "Bleh"})
 
-	ts := Time_series(d)
+	ts := reports.Time_series(d)
 	if len(ts) != 2 {
 		t.Error("Wrong number of tags counted. Should be 2. %q", ts)
 	}

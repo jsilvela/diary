@@ -1,13 +1,14 @@
-package diary
+package diary_test
 
 import (
+	"github.com/jsilvela/diary"
 	"testing"
 	"time"
 )
 
 func Test_Add_entry(t *testing.T) {
-	var d Diary
-	(&d).Add_entry(&Record{Tags: []string{"hello", "there"}})
+	var d diary.Diary
+	(&d).Add_entry(&diary.Record{Tags: []string{"hello", "there"}})
 	if len(d) != 1 {
 		t.Errorf("After adding one entry to empty diary, expected it to have 1 entry. "+
 			"Got %d", len(d))
@@ -19,8 +20,8 @@ func Test_Add_entry(t *testing.T) {
 }
 
 func Test_Add_entry_respects_existing_Written_time(t *testing.T) {
-	var d Diary
-	r := Record{Tags: []string{"hello", "there"}}
+	var d diary.Diary
+	r := diary.Record{Tags: []string{"hello", "there"}}
 	if !r.Written_time.IsZero() {
 		t.Errorf("Unexpected non-default value for Written_time: %v", r.Written_time)
 	}
@@ -39,7 +40,7 @@ func Test_Add_entry_respects_existing_Written_time(t *testing.T) {
 }
 
 func Test_Read_empty(t *testing.T) {
-	d, err := Read("")
+	d, err := diary.Read("")
 	if err == nil {
 		t.Errorf("Should have errored when trying to read from empty file."+
 			" Read this instead %v", d)
@@ -47,17 +48,17 @@ func Test_Read_empty(t *testing.T) {
 }
 
 func Test_Latest(t *testing.T) {
-	var d Diary
+	var d diary.Diary
 	const base_time = "Jan 2 2006 15:04:05"
 	t1, _ := time.Parse(base_time, "Jan 2 2006 15:04:05")
 	t2, _ := time.Parse(base_time, "Jan 2 2016 15:04:05")
 	t3, _ := time.Parse(base_time, "Jan 3 2006 15:04:05")
 
-	(&d).Add_entry(&Record{
+	(&d).Add_entry(&diary.Record{
 		Tags:         []string{"hello", "there"},
 		Event_time:   t3,
 		Written_time: t2})
-	(&d).Add_entry(&Record{
+	(&d).Add_entry(&diary.Record{
 		Tags:         []string{"bye", "there"},
 		Event_time:   t1,
 		Written_time: t1})
