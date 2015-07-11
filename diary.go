@@ -32,11 +32,6 @@ func (r Record) String() string {
 		y, m, d, r.Tags, r.Text)
 }
 
-func (r Record) IsZero() bool {
-	return len(r.Tags) == 0 && r.Text == "" &&
-		r.WrittenTime.IsZero() && r.EventTime.IsZero()
-}
-
 // Write diary onto file
 func Write(filename string, d Diary) error {
 	mar, err := json.MarshalIndent(d, "", "\t")
