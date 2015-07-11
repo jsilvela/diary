@@ -10,26 +10,34 @@ import (
 	"time"
 )
 
+// Record represents an entry in the diary
 type Record struct {
-	Event_time   time.Time
-	Written_time time.Time
-	Tags         []string
-	Text         string
+	EventTime   time.Time
+	WrittenTime time.Time
+	Tags        []string
+	Text        string
 }
 
-type Diary []*Record
+// Diary represents a diary
+type Diary []Record
 
 // The Len, Swap and Less functions allow sorting
 func (a Diary) Len() int           { return len(a) }
 func (a Diary) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a Diary) Less(i, j int) bool { return a[i].Event_time.Before(a[j].Event_time) }
+func (a Diary) Less(i, j int) bool { return a[i].EventTime.Before(a[j].EventTime) }
 
-func (r *Record) String() string {
-	y, m, d := r.Event_time.Date()
+func (r Record) String() string {
+	y, m, d := r.EventTime.Date()
 	return fmt.Sprintf("time: %d-%d-%d\ntags: %s\ntext: %s\n",
 		y, m, d, r.Tags, r.Text)
 }
 
+func (r Record) IsZero() bool {
+	return len(r.Tags) == 0 && r.Text == "" &&
+		r.WrittenTime.IsZero() && r.EventTime.IsZero()
+}
+
+// Write diary onto file
 func Write(filename string, d Diary) error {
 	mar, err := json.MarshalIndent(d, "", "\t")
 	if err != nil {
@@ -39,7 +47,8 @@ func Write(filename string, d Diary) error {
 	return e
 }
 
-func Read(filename string) (*Diary, error) {
+// Read diary from file
+func Read(filename string) (Diary, error) {
 	bytes, errfile := ioutil.ReadFile(filename)
 	if errfile != nil {
 		return nil, errfile
@@ -49,34 +58,39 @@ func Read(filename string) (*Diary, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &reqs, nil
+	return reqs, nil
 }
 
-func (a *Diary) Add_entry(r *Record) {
-	if r.Written_time.IsZero() {
-		r.Written_time = time.Now()
-	}
-	*a = append(*a, r)
-}
-
-func (a Diary) Latest_happened() (r *Record) {
-	var latest time.Time
-	var rec *Record
-	for _, e := range a {
-		if latest.Before(e.Event_time) {
-			latest, rec = e.Event_time, e
+// AddEntry adds a new record to the diary
+func (a *Diary) AddEntry(r Record) {
+	rcopy := r
+	if rcopy.WrittenTime.IsZero() {
+		rcopy.WrittenTime = time.Now()
+		if rcopy.WrittenTime.IsZero() {
+			panic("Whhhaaa?")
 		}
 	}
-	return rec
+	*a = append(*a, rcopy)
 }
 
-func (a Diary) Latest_written() (r *Record) {
-	var latest time.Time
-	var rec *Record
+// LatestHappened gets the record with the latest event time
+func (a Diary) LatestHappened() (r Record) {
+	var latest Record
 	for _, e := range a {
-		if latest.Before(e.Written_time) {
-			latest, rec = e.Written_time, e
+		if latest.EventTime.Before(e.EventTime) {
+			latest = e
 		}
 	}
-	return rec
+	return latest
+}
+
+// LatestWritten gets event written last
+func (a Diary) LatestWritten() (r Record) {
+	var latest Record
+	for _, e := range a {
+		if latest.WrittenTime.Before(e.WrittenTime) {
+			latest = e
+		}
+	}
+	return latest
 }

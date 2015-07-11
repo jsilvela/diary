@@ -11,21 +11,23 @@ import (
 	"time"
 )
 
-func Latest(d diary.Diary) map[string]*time.Time {
+// Latest maps each tag to its latest occurrence
+func Latest(d diary.Diary) map[string]time.Time {
 
-	tag_time := make(map[string]*time.Time)
+	tagTime := make(map[string]time.Time)
 	sort.Stable(sort.Reverse(d))
 	for _, r := range d {
 		for _, tag := range r.Tags {
-			if tag_time[tag] == nil {
-				tag_time[tag] = &r.Event_time
+			if tagTime[tag].IsZero() {
+				tagTime[tag] = r.EventTime
 			}
 		}
 	}
 
-	return tag_time
+	return tagTime
 }
 
+// Tags finds all the Tags in the diary
 func Tags(d diary.Diary) []string {
 
 	var tags []string
@@ -36,8 +38,8 @@ func Tags(d diary.Diary) []string {
 	return tags
 }
 
-// CSV output
-func Time_series(d diary.Diary) []string {
+// TimeSeries generates CSV output with the time series data
+func TimeSeries(d diary.Diary) []string {
 	file, err := os.Create("report.csv")
 	if err != nil {
 		log.Fatal(err)
@@ -46,7 +48,7 @@ func Time_series(d diary.Diary) []string {
 	lines := make([]string, d.Len())
 	sort.Stable(sort.Reverse(d))
 	for i, r := range d {
-		t := r.Event_time.Format("Mon 2 Jan 2006")
+		t := r.EventTime.Format("Mon 2 Jan 2006")
 		tags := strings.Join(r.Tags, ",")
 		writer.Write([]string{t, tags, r.Text})
 		lines[i] = fmt.Sprintf("%s => %s\n", t, tags)

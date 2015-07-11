@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-func Test_Add_entry(t *testing.T) {
+func Test_AddEntry(t *testing.T) {
 	var d diary.Diary
-	(&d).Add_entry(&diary.Record{Tags: []string{"hello", "there"}})
+	(&d).AddEntry(diary.Record{Tags: []string{"hello", "there"}})
 	if len(d) != 1 {
 		t.Errorf("After adding one entry to empty diary, expected it to have 1 entry. "+
 			"Got %d", len(d))
@@ -19,27 +19,32 @@ func Test_Add_entry(t *testing.T) {
 	}
 }
 
-func Test_Add_entry_respects_existing_Written_time(t *testing.T) {
+func Test_AddEntry_respectsExisting_Written_time(t *testing.T) {
 	var d diary.Diary
 	r := diary.Record{Tags: []string{"hello", "there"}}
-	if !r.Written_time.IsZero() {
-		t.Errorf("Unexpected non-default value for Written_time: %v", r.Written_time)
+	if !r.WrittenTime.IsZero() {
+		t.Errorf("Unexpected non-default value for WrittenTime: %v", r.WrittenTime)
 	}
 
-	(&d).Add_entry(&r)
-	t1 := r.Written_time
-	if t1.IsZero() {
-		t.Errorf("Unexpected default value for Written_time: %v", t1)
+	(&d).AddEntry(r)
+	t1 := r.WrittenTime
+	if !t1.IsZero() {
+		t.Error("AddEntry modified the record argument")
+	}
+	el1 := d[0]
+	if el1.WrittenTime.IsZero() {
+		t.Error("AddEntry didn't write the TimeWritten timestamp")
 	}
 
-	(&d).Add_entry(&r)
-	t2 := r.Written_time
-	if t2 != t1 {
-		t.Errorf("Add_entry modified existing Add_entry date: %s from %s", t2, t1)
+	r2 := diary.Record{WrittenTime: time.Now(), EventTime: time.Now()}
+	(&d).AddEntry(r2)
+	el2 := d[1]
+	if el2.WrittenTime != r2.WrittenTime {
+		t.Errorf("AddEntry modified existing AddEntry date: %s from %s", r2, el2)
 	}
 }
 
-func Test_Read_empty(t *testing.T) {
+func Test_ReadEmpty(t *testing.T) {
 	d, err := diary.Read("")
 	if err == nil {
 		t.Errorf("Should have errored when trying to read from empty file."+
@@ -49,27 +54,27 @@ func Test_Read_empty(t *testing.T) {
 
 func Test_Latest(t *testing.T) {
 	var d diary.Diary
-	const base_time = "Jan 2 2006 15:04:05"
-	t1, _ := time.Parse(base_time, "Jan 2 2006 15:04:05")
-	t2, _ := time.Parse(base_time, "Jan 2 2016 15:04:05")
-	t3, _ := time.Parse(base_time, "Jan 3 2006 15:04:05")
+	const baseTime = "Jan 2 2006 15:04:05"
+	t1, _ := time.Parse(baseTime, "Jan 2 2006 15:04:05")
+	t2, _ := time.Parse(baseTime, "Jan 2 2016 15:04:05")
+	t3, _ := time.Parse(baseTime, "Jan 3 2006 15:04:05")
 
-	(&d).Add_entry(&diary.Record{
-		Tags:         []string{"hello", "there"},
-		Event_time:   t3,
-		Written_time: t2})
-	(&d).Add_entry(&diary.Record{
-		Tags:         []string{"bye", "there"},
-		Event_time:   t1,
-		Written_time: t1})
+	(&d).AddEntry(diary.Record{
+		Tags:        []string{"hello", "there"},
+		EventTime:   t3,
+		WrittenTime: t2})
+	(&d).AddEntry(diary.Record{
+		Tags:        []string{"bye", "there"},
+		EventTime:   t1,
+		WrittenTime: t1})
 
-	latest_hp := d.Latest_happened()
-	latest_wr := d.Latest_written()
+	latestHp := d.LatestHappened()
+	latestWr := d.LatestWritten()
 
-	if latest_hp.Event_time != t3 {
-		t.Errorf("Bad ordering. Latest happened should not have been: %v", latest_hp)
+	if latestHp.EventTime != t3 {
+		t.Errorf("Bad ordering. Latest happened should not have been: %v", latestHp)
 	}
-	if latest_wr.Written_time != t2 {
-		t.Errorf("Bad ordering. Latest written should not have been: %v", latest_wr)
+	if latestWr.WrittenTime != t2 {
+		t.Errorf("Bad ordering. Latest written should not have been: %v", latestWr)
 	}
 }
