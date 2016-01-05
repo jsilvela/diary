@@ -12,10 +12,10 @@ import (
 
 // Record represents an entry in the diary
 type Record struct {
-	EventTime   time.Time
-	WrittenTime time.Time
-	Tags        []string
-	Text        string
+	EventTime   time.Time `json:"eventTime"`
+	WrittenTime time.Time `json:"writtenTime"`
+	Tags        []string  `json:"tags"`
+	Text        string    `json:"text"`
 }
 
 // Diary represents a diary
