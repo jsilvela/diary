@@ -1,10 +1,11 @@
 package reports_test
 
 import (
-	"github.com/jsilvela/diary"
-	"github.com/jsilvela/diary/reports"
 	"testing"
 	"time"
+
+	"github.com/jsilvela/diary"
+	"github.com/jsilvela/diary/reports"
 )
 
 func Test_Latest(t *testing.T) {

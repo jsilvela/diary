@@ -3,12 +3,13 @@ package reports
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/jsilvela/diary"
 	"log"
 	"os"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/jsilvela/diary"
 )
 
 // Latest maps each tag to its latest occurrence
