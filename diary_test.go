@@ -3,12 +3,12 @@ package diary_test
 import (
 	"bytes"
 	"github.com/jsilvela/diary"
+	"strings"
 	"testing"
 	"time"
-	"strings"
 )
 
-func Test_AddEntry(t *testing.T) {
+func TestAddEntry(t *testing.T) {
 	var d diary.Diary
 	(&d).AddEntry(diary.Record{Tags: []string{"hello", "there"}})
 	if len(d) != 1 {
@@ -21,7 +21,7 @@ func Test_AddEntry(t *testing.T) {
 	}
 }
 
-func Test_AddEntry_respectsExisting_Written_time(t *testing.T) {
+func TestAddEntry_respects_existing_WrittenTime(t *testing.T) {
 	var d diary.Diary
 	r := diary.Record{Tags: []string{"hello", "there"}}
 	if !r.WrittenTime.IsZero() {
@@ -46,7 +46,7 @@ func Test_AddEntry_respectsExisting_Written_time(t *testing.T) {
 	}
 }
 
-func Test_ReadEmpty(t *testing.T) {
+func TestReadEmpty(t *testing.T) {
 	empty := bytes.NewBufferString("")
 	d, err := diary.Read(empty)
 	if err == nil {
@@ -86,7 +86,7 @@ func TestWrite(t *testing.T) {
 		Tags:        []string{"hello", "there"},
 		EventTime:   t3,
 		WrittenTime: t3,
-	Text: "MyText."})
+		Text:        "MyText."})
 	var b []byte
 	buf := bytes.NewBuffer(b)
 	err := diary.Write(buf, d)
@@ -112,7 +112,7 @@ func TestWrite(t *testing.T) {
 	}
 }
 
-func Test_Latest(t *testing.T) {
+func TestLatestTimestamps(t *testing.T) {
 	var d diary.Diary
 	const baseTime = "Jan 2 2006 15:04:05"
 	t1, _ := time.Parse(baseTime, "Jan 2 2006 15:04:05")

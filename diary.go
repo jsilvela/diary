@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"time"
 )
 
@@ -45,16 +44,10 @@ func Write(writer io.Writer, d Diary) error {
 
 // Read diary from file
 func Read(reader io.Reader) (Diary, error) {
-	bytes, err := ioutil.ReadAll(reader)
-	if err != nil {
-		return nil, err
-	}
+	decoder := json.NewDecoder(reader)
 	var reqs Diary
-	err = json.Unmarshal(bytes, &reqs)
-	if err != nil {
-		return nil, err
-	}
-	return reqs, nil
+	err := decoder.Decode(&reqs)
+	return reqs, err
 }
 
 // AddEntry adds a new record to the diary
