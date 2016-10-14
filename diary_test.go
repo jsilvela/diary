@@ -1,12 +1,14 @@
 package diary_test
 
 import (
+	"bytes"
 	"github.com/jsilvela/diary"
+	"strings"
 	"testing"
 	"time"
 )
 
-func Test_AddEntry(t *testing.T) {
+func TestAddEntry(t *testing.T) {
 	var d diary.Diary
 	(&d).AddEntry(diary.Record{Tags: []string{"hello", "there"}})
 	if len(d) != 1 {
@@ -19,7 +21,7 @@ func Test_AddEntry(t *testing.T) {
 	}
 }
 
-func Test_AddEntry_respectsExisting_Written_time(t *testing.T) {
+func TestAddEntry_respects_existing_WrittenTime(t *testing.T) {
 	var d diary.Diary
 	r := diary.Record{Tags: []string{"hello", "there"}}
 	if !r.WrittenTime.IsZero() {
@@ -44,15 +46,73 @@ func Test_AddEntry_respectsExisting_Written_time(t *testing.T) {
 	}
 }
 
-func Test_ReadEmpty(t *testing.T) {
-	d, err := diary.Read("")
+func TestReadEmpty(t *testing.T) {
+	empty := bytes.NewBufferString("")
+	d, err := diary.Read(empty)
 	if err == nil {
 		t.Errorf("Should have errored when trying to read from empty file."+
 			" Read this instead %v", d)
 	}
 }
 
-func Test_Latest(t *testing.T) {
+func TestRead(t *testing.T) {
+	buf := bytes.NewBufferString(`[
+	{
+		"eventTime": "2014-09-21T00:00:00Z",
+		"writtenTime": "2014-03-11T09:42:31.379879883+02:00",
+		"tags": [
+			"myTag"
+		],
+		"text": "myText."
+	}]`)
+	d, err := diary.Read(buf)
+	if err != nil {
+		t.Error(err)
+	}
+	if len(d) != 1 {
+		t.Errorf("Should have found one entry, found %d", len(d))
+	}
+	if d[0].Text != "myText." || d[0].Tags[0] != "myTag" {
+		t.Errorf("Unexpected value parsed for entry: %v", d[0])
+	}
+}
+
+func TestWrite(t *testing.T) {
+	var d diary.Diary
+	const baseTime = "Jan 2 2006 15:04:05"
+	t3, _ := time.Parse(baseTime, "Jan 3 2006 15:04:05")
+
+	(&d).AddEntry(diary.Record{
+		Tags:        []string{"hello", "there"},
+		EventTime:   t3,
+		WrittenTime: t3,
+		Text:        "MyText."})
+	var b []byte
+	buf := bytes.NewBuffer(b)
+	err := diary.Write(buf, d)
+	if err != nil {
+		t.Error(err)
+	}
+	expected := `[
+        {
+                "eventTime": "2006-01-03T15:04:05Z",
+                "writtenTime": "2006-01-03T15:04:05Z",
+                "tags": [
+                        "hello",
+                        "there"
+                ],
+                "text": "MyText."
+        }
+]`
+	if strings.Replace(strings.Replace(buf.String(), " ", "", -1), "\t", "", -1) !=
+		strings.Replace(expected, " ", "", -1) {
+		t.Errorf("Unexpected output:\n%s\n%s",
+			strings.Replace(strings.Replace(buf.String(), " ", "", -1), "\t", "", -1),
+			strings.Replace(expected, " ", "", -1))
+	}
+}
+
+func TestLatestTimestamps(t *testing.T) {
 	var d diary.Diary
 	const baseTime = "Jan 2 2006 15:04:05"
 	t1, _ := time.Parse(baseTime, "Jan 2 2006 15:04:05")

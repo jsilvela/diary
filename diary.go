@@ -6,7 +6,7 @@ package diary
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"time"
 )
 
@@ -33,27 +33,21 @@ func (r Record) String() string {
 }
 
 // Write diary onto file
-func Write(filename string, d Diary) error {
+func Write(writer io.Writer, d Diary) error {
 	mar, err := json.MarshalIndent(d, "", "\t")
 	if err != nil {
 		return err
 	}
-	e := ioutil.WriteFile(filename, mar, 0644)
+	_, e := writer.Write(mar)
 	return e
 }
 
 // Read diary from file
-func Read(filename string) (Diary, error) {
-	bytes, errfile := ioutil.ReadFile(filename)
-	if errfile != nil {
-		return nil, errfile
-	}
+func Read(reader io.Reader) (Diary, error) {
+	decoder := json.NewDecoder(reader)
 	var reqs Diary
-	err := json.Unmarshal(bytes, &reqs)
-	if err != nil {
-		return nil, err
-	}
-	return reqs, nil
+	err := decoder.Decode(&reqs)
+	return reqs, err
 }
 
 // AddEntry adds a new record to the diary
